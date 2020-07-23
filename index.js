@@ -14,19 +14,17 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-const { setConfig, startApp, setBitmap } = require('./stuff/gs');
+const { setConfig, startApp, setKeyboardColors } = require('./stuff/gs');
 const config = require('./stuff/config');
 
 async function start() {
     setConfig(config());
     await startApp();
-    console.log('started');
+    console.log('listening');
 
     db.collection('keyboard-colors')
         .doc('current')
-        .onSnapshot(function(doc) {
-            setBitmap(doc.data().hex);
-        });
+        .onSnapshot(function(doc) { setKeyboardColors(doc.data()); });
 }
 
 start();

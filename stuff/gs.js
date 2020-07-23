@@ -1,8 +1,7 @@
 const axios = require('axios').default;
-const { createBitmap, hexToRgb } = require('./bitmap');
+const { updateBitmap } = require('./bitmap');
 
 let CONFIG = null;
-let bitmap = createBitmap([252, 198, 3]);
 
 // sets the internal config file
 function setConfig(cfg) {
@@ -53,24 +52,20 @@ function bindEvent() {
     });
 }
 
-async function setBitmap(data) {
-    for(let i=0;i<data.length;i++) {
-        const { r, g, b } = hexToRgb(data[i]);
-        bitmap[i] = [r, g, b];
-    }
-
+async function setKeyboardColors(newData) {
     try {
         await post({
             endpoint: 'game_event',
             data: {
                 game: CONFIG.GAME_NAME,
                 event: CONFIG.EVENT_NAME,
-                data: {frame: { bitmap } }
+                data: {frame: { bitmap: updateBitmap(newData) } }
             }
         });
     } catch(e) {
-        console.log(e);
+        console.error(e);
     }
+    
 }
 
 // starts interval to send heartbeat every s seconds
@@ -113,5 +108,5 @@ module.exports = {
     registerGame,
     bindEvent,
     startHeartbeat,
-    setBitmap
+    setKeyboardColors
 };

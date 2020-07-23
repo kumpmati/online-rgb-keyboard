@@ -1,19 +1,11 @@
+const keyIndexes = require('./M750Keys.json');
+
+let bitmap = createBitmap([0, 255, 0]);
+
 function createBitmap([r, g, b]) {
     let arr = [];
     for(let i=0; i<132; i++) {
         arr[i] = [r, g, b];
-    }
-    return arr;
-}
-
-function lerpBitmap(prev, next, step) {
-    if(prev.length !== next.length) return null;
-
-    let arr = prev.slice(0);
-    for(let i=0; i<prev.length; i++) {
-        arr[i][0] += ~~((next[i][0] - arr[i][0]) * step),
-        arr[i][1] += ~~((next[i][1] - arr[i][1]) * step),
-        arr[i][2] += ~~((next[i][2] - arr[i][2]) * step)
     }
     return arr;
 }
@@ -31,10 +23,29 @@ function hexToRgb(hex) {
       g: parseInt(result[2], 16),
       b: parseInt(result[3], 16)
     } : null;
-  }
+}
+
+function mapKeysToArr(data) {
+    let arr = bitmap.slice(0);
+    // iterate key names
+    for(const key of Object.keys(data)) {
+        //get bitmap array index using keyname
+        const index = keyIndexes[key];
+
+        if(index) {
+            const { r, g, b } = hexToRgb(data[key]);
+            arr[index] = [r, g, b];
+        }
+    }
+    return arr;
+}
+
+function updateBitmap(data) {
+    bitmap = mapKeysToArr(data);
+    return bitmap;
+}
 
 module.exports = {
     createBitmap,
-    lerpBitmap,
-    hexToRgb
+    updateBitmap
 };
